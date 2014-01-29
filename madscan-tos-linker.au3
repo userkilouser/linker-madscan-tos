@@ -5,61 +5,61 @@
 #include <Array.au3>
 
 
-; Ссылка на xml, содержащий название комании
+; РЎСЃС‹Р»РєР° РЅР° xml, СЃРѕРґРµСЂР¶Р°С‰РёР№ РЅР°Р·РІР°РЅРёРµ РєРѕРјР°РЅРёРё
 Global Const $yqlAPICompanyNameRequest = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=<SYMBOL>&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
 
-; Ссылка на xml, содержащий сектор и индустрии компании
+; РЎСЃС‹Р»РєР° РЅР° xml, СЃРѕРґРµСЂР¶Р°С‰РёР№ СЃРµРєС‚РѕСЂ Рё РёРЅРґСѓСЃС‚СЂРёРё РєРѕРјРїР°РЅРёРё
 Global Const $yqlAPICompanySectorRequest = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.stocks%20where%20symbol%3D%22<SYMBOL>%22&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
 
-; регистрация нажатия ESC для выхода из программы
+; СЂРµРіРёСЃС‚СЂР°С†РёСЏ РЅР°Р¶Р°С‚РёСЏ ESC РґР»СЏ РІС‹С…РѕРґР° РёР· РїСЂРѕРіСЂР°РјРјС‹
 HotKeySet("{ESC}", "Terminate")
 
-; Создаем окно формы
+; РЎРѕР·РґР°РµРј РѕРєРЅРѕ С„РѕСЂРјС‹
 $pic = GUICreate("Linker", 400, 30, 620, 80, $WS_POPUP, BitOR($WS_EX_LAYERED, $WS_EX_TOPMOST)) ;
 
-; Кладем на форму картинку с прозрачным фоном
+; РљР»Р°РґРµРј РЅР° С„РѕСЂРјСѓ РєР°СЂС‚РёРЅРєСѓ СЃ РїСЂРѕР·СЂР°С‡РЅС‹Рј С„РѕРЅРѕРј
 $basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 30,-1, $GUI_WS_EX_PARENTDRAG)
 
-; Создаем надпись (пока пустую)
+; РЎРѕР·РґР°РµРј РЅР°РґРїРёСЃСЊ (РїРѕРєР° РїСѓСЃС‚СѓСЋ)
 $hDC = GUICtrlCreateLabel("",0, 0, 400, 30)
-; Настройка надписи
+; РќР°СЃС‚СЂРѕР№РєР° РЅР°РґРїРёСЃРё
 GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 GUICtrlSetColor($hDC, 0xffd800)
 
-; Отображаем окно формы
+; РћС‚РѕР±СЂР°Р¶Р°РµРј РѕРєРЅРѕ С„РѕСЂРјС‹
 GUISetState(@SW_SHOW)
 
-; Инициализация тикера
+; РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚РёРєРµСЂР°
 $symbPrev = ""
 
-; "Вечный" цикл отображения окна формы
+; "Р’РµС‡РЅС‹Р№" С†РёРєР» РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РѕРєРЅР° С„РѕСЂРјС‹
 While 1
    
-   ; Берем видимый текст с активного окна
+   ; Р‘РµСЂРµРј РІРёРґРёРјС‹Р№ С‚РµРєСЃС‚ СЃ Р°РєС‚РёРІРЅРѕРіРѕ РѕРєРЅР°
    Local $hActiveText = WinGetText("[ACTIVE]", "")
 
-   ; Сравниваем полученную выше строку с известным значением WinGetText() для фильтров Madscan
+   ; РЎСЂР°РІРЅРёРІР°РµРј РїРѕР»СѓС‡РµРЅРЅСѓСЋ РІС‹С€Рµ СЃС‚СЂРѕРєСѓ СЃ РёР·РІРµСЃС‚РЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј WinGetText() РґР»СЏ С„РёР»СЊС‚СЂРѕРІ Madscan
    If StringInStr($hActiveText, "toolStripContainer1") = 1 Then
 	  
-	  ; Обнулям предыдущее значение надписи
+	  ; РћР±РЅСѓР»СЏРј РїСЂРµРґС‹РґСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ РЅР°РґРїРёСЃРё
       ControlSetText($pic, "", $hDC, "")
 	  
-	  ; Если активное окно - это фильтр Madscan, то посылаем ему Ctrl+C для копирования в буфер всей строки, которая под мышкой
+	  ; Р•СЃР»Рё Р°РєС‚РёРІРЅРѕРµ РѕРєРЅРѕ - СЌС‚Рѕ С„РёР»СЊС‚СЂ Madscan, С‚Рѕ РїРѕСЃС‹Р»Р°РµРј РµРјСѓ Ctrl+C РґР»СЏ РєРѕРїРёСЂРѕРІР°РЅРёСЏ РІ Р±СѓС„РµСЂ РІСЃРµР№ СЃС‚СЂРѕРєРё, РєРѕС‚РѕСЂР°СЏ РїРѕРґ РјС‹С€РєРѕР№
       Send("{CTRLDOWN}C{CTRLUP}")
 
-	  ; Убираем из строки часть из времени алерта (которое в американском формате, например 1:13 PM)
+	  ; РЈР±РёСЂР°РµРј РёР· СЃС‚СЂРѕРєРё С‡Р°СЃС‚СЊ РёР· РІСЂРµРјРµРЅРё Р°Р»РµСЂС‚Р° (РєРѕС‚РѕСЂРѕРµ РІ Р°РјРµСЂРёРєР°РЅСЃРєРѕРј С„РѕСЂРјР°С‚Рµ, РЅР°РїСЂРёРјРµСЂ 1:13 PM)
       Local $Clip = StringRegExpReplace (ClipGet(), ":\d+\s[A|P]M", "", 0)
 	  
-      ; Выбираем из отстатка строки тикер
+      ; Р’С‹Р±РёСЂР°РµРј РёР· РѕС‚СЃС‚Р°С‚РєР° СЃС‚СЂРѕРєРё С‚РёРєРµСЂ
       Local $TickerArray = StringRegExp($Clip, '([A-Z|\.\-\+]+)\s', 1, 1)
       Local $Ticker = _ArrayToString($TickerArray, "")
 	  ; ConsoleWrite($TickerArray & @CRLF)
 	  ; ConsoleWrite($Ticker & @CRLF)
 	  
-	  ; Обновляем $symbPrev
+	  ; РћР±РЅРѕРІР»СЏРµРј $symbPrev
 	  $symbPrev = $Ticker
 
-	  ; Активируем окно Level2 в Arche
+	  ; РђРєС‚РёРІРёСЂСѓРµРј РѕРєРЅРѕ Level2 РІ Arche
        _WinWaitActivate("[CLASS:SunAwtFrame]", "")
       Local $hLevelII = ControlGetHandle("[CLASS:SunAwtFrame]", "", "")
 	  ConsoleWrite($hLevelII & @CRLF)
@@ -72,81 +72,82 @@ While 1
 ;~ 	  Next
 ;~ 	  Send( "{ENTER}")
 	  
-	  ; Вызов функции для получения инфо компании по тикеру
+	  ; Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РёРЅС„Рѕ РєРѕРјРїР°РЅРёРё РїРѕ С‚РёРєРµСЂСѓ
       $sSymbolInfo = GetCompanyInfo($Ticker)
 	  
-	  ; Устанавливаем значения надписи в соответствии с инфо о компании
+	  ; РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р·РЅР°С‡РµРЅРёСЏ РЅР°РґРїРёСЃРё РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РёРЅС„Рѕ Рѕ РєРѕРјРїР°РЅРёРё
       GUICtrlSetData($hDC, $sSymbolInfo)
 
    EndIf
 
-   ; Ручное информирование :)
+   ; Р СѓС‡РЅРѕРµ РёРЅС„РѕСЂРјРёСЂРѕРІР°РЅРёРµ :)
    
-   ; Определяем заголовок активного окна
-   Local $windowTitle = WinGetTitle("[ACTIVE]", "")
+   ; РћРїСЂРµРґРµР»СЏРµРј Р·Р°РіРѕР»РѕРІРѕРє Р°РєС‚РёРІРЅРѕРіРѕ РѕРєРЅР°
+   ; Local $windowTitle = WinGetTitle("[ACTIVE]", "")
    ; ConsoleWrite("$windowTitle=" & $windowTitle & @LF)
   
-   ; Если активное окно - это окно Level2, то
-   If StringInStr($windowTitle, "Level2") = 1 Then
+   ; Р•СЃР»Рё Р°РєС‚РёРІРЅРѕРµ РѕРєРЅРѕ - СЌС‚Рѕ РѕРєРЅРѕ Level2, С‚Рѕ
+   ; If StringInStr($windowTitle, "Level2") = 1 Then
      
-      ; Определяем видимый текст окна Level2
-      Local $hActiveText = $windowTitle
+      ; РћРїСЂРµРґРµР»СЏРµРј РІРёРґРёРјС‹Р№ С‚РµРєСЃС‚ РѕРєРЅР° Level2
+      ; Local $hActiveText = $windowTitle
       ; ConsoleWrite("$hActiveText=" & $hActiveText & @LF)
      
-      ; Из видимого текста выбираем тикер, по паттерну
-      $symbArray = StringRegExp($hActiveText, '([A-Z|\.\-\+]+)~', 1, 1)
-      If @error > 0 Then
-         ; ConsoleWrite("StringRegExp@error=" & @error & @LF)
-         MsgBox(0, "StringRegExp@error", @error)
-      EndIf
+      ; РР· РІРёРґРёРјРѕРіРѕ С‚РµРєСЃС‚Р° РІС‹Р±РёСЂР°РµРј С‚РёРєРµСЂ, РїРѕ РїР°С‚С‚РµСЂРЅСѓ
+      ; $symbArray = StringRegExp($hActiveText, '([A-Z|\.\-\+]+)~', 1, 1)
+      ; If @error > 0 Then
+          ; ConsoleWrite("StringRegExp@error=" & @error & @LF)
+          ; MsgBox(0, "StringRegExp@error", @error)
+      ; EndIf
      
-      ; Тикер
-      Local $symbNew = _ArrayToString($symbArray, "")
+      ; РўРёРєРµСЂ
+      ; Local $symbNew = _ArrayToString($symbArray, "")
      
-      ; Если значение тикера изменилось, то
-      If $symbNew <> $symbPrev Then
+      ; Р•СЃР»Рё Р·РЅР°С‡РµРЅРёРµ С‚РёРєРµСЂР° РёР·РјРµРЅРёР»РѕСЃСЊ, С‚Рѕ
+      ; If $symbNew <> $symbPrev Then
          ; ConsoleWrite("$symbNew=" & $symbNew & @LF )
          
-         ; Обнулям предыдущее значение надписи
-         ControlSetText($pic, "", $hDC, "")
+         ; РћР±РЅСѓР»СЏРј РїСЂРµРґС‹РґСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ РЅР°РґРїРёСЃРё
+         ; ControlSetText($pic, "", $hDC, "")
          
-         ; Вызов функции для получения инфо компании по тикеру
-         $sSymbolInfo = GetCompanyInfo($symbNew)
+         ; Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РёРЅС„Рѕ РєРѕРјРїР°РЅРёРё РїРѕ С‚РёРєРµСЂСѓ
+         ; $sSymbolInfo = GetCompanyInfo($symbNew)
      
-         ; Устанавливаем значения надписи в соответствии с инфо о компании
-         GUICtrlSetData($hDC, $sSymbolInfo)
+         ; РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р·РЅР°С‡РµРЅРёСЏ РЅР°РґРїРёСЃРё РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РёРЅС„Рѕ Рѕ РєРѕРјРїР°РЅРёРё
+         ; GUICtrlSetData($hDC, $sSymbolInfo)
          
-         ; Заменяем предыдущее значение тикера на новое
-         $symbPrev = $symbNew
-      EndIf
+         ; Р—Р°РјРµРЅСЏРµРј РїСЂРµРґС‹РґСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ С‚РёРєРµСЂР° РЅР° РЅРѕРІРѕРµ
+         ; $symbPrev = $symbNew
+      ; EndIf
      
-   EndIf   
-   ; Если нажата правая клавиша мышки - выход из цикла
+   ; EndIf   
+   
+   ; Р•СЃР»Рё РЅР°Р¶Р°С‚Р° РїСЂР°РІР°СЏ РєР»Р°РІРёС€Р° РјС‹С€РєРё - РІС‹С…РѕРґ РёР· С†РёРєР»Р°
    If _IsPressed("02") Then
       ExitLoop
    EndIf
 
 WEnd
 
-; Функция активации окна
+; Р¤СѓРЅРєС†РёСЏ Р°РєС‚РёРІР°С†РёРё РѕРєРЅР°
 Func _WinWaitActivate($title,$text,$timeout=0)
     WinWait($title,$text,$timeout)
     If Not WinActive($title,$text) Then WinActivate($title,$text)
     WinWaitActive($title,$text,$timeout)
  EndFunc
 
-; Выход из программы
+; Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹
 Func Terminate()
     Exit 0
  EndFunc
 
-; Получение инфо о компании по тикеру
+; РџРѕР»СѓС‡РµРЅРёРµ РёРЅС„Рѕ Рѕ РєРѕРјРїР°РЅРёРё РїРѕ С‚РёРєРµСЂСѓ
 Func GetCompanyInfo($sSymbol)
 
    $sRequest = StringReplace($yqlAPICompanyNameRequest, "<SYMBOL>", $sSymbol)
    ; ConsoleWrite($sRequest & @CRLF)
 
-   ; Получение информации об имени компании
+   ; РџРѕР»СѓС‡РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё РѕР± РёРјРµРЅРё РєРѕРјРїР°РЅРёРё
    $bData = InetRead($sRequest)
 
    $aLines = BinaryToString($bData, 4)
@@ -163,7 +164,7 @@ Func GetCompanyInfo($sSymbol)
 	  $sCompanyInfo = "N/A, "
    EndIf
 
-   ; Получение информации о секторе и индустрии компании
+   ; РџРѕР»СѓС‡РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ СЃРµРєС‚РѕСЂРµ Рё РёРЅРґСѓСЃС‚СЂРёРё РєРѕРјРїР°РЅРёРё
 
    $sRequest = StringReplace($yqlAPICompanySectorRequest, "<SYMBOL>", $sSymbol)
    ; ConsoleWrite($sRequest & @CRLF)
