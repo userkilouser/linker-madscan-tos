@@ -34,28 +34,28 @@ $symbPrev = ""
 
 ; "Вечный" цикл отображения окна формы
 While 1
-   
+
    ; Берем видимый текст с активного окна
    Local $hActiveText = WinGetText("[ACTIVE]", "")
 
    ; Сравниваем полученную выше строку с известным значением WinGetText() для фильтров Madscan
    If StringInStr($hActiveText, "toolStripContainer1") = 1 Then
-	  
+
 	  ; Обнулям предыдущее значение надписи
       ControlSetText($pic, "", $hDC, "")
-	  
+
 	  ; Если активное окно - это фильтр Madscan, то посылаем ему Ctrl+C для копирования в буфер всей строки, которая под мышкой
       Send("{CTRLDOWN}C{CTRLUP}")
 
 	  ; Убираем из строки часть из времени алерта (которое в американском формате, например 1:13 PM)
       Local $Clip = StringRegExpReplace (ClipGet(), ":\d+\s[A|P]M", "", 0)
-	  
+
       ; Выбираем из отстатка строки тикер
       Local $TickerArray = StringRegExp($Clip, '([A-Z|\.\-\+]+)\s', 1, 1)
       Local $Ticker = _ArrayToString($TickerArray, "")
 	  ; ConsoleWrite($TickerArray & @CRLF)
 	  ; ConsoleWrite($Ticker & @CRLF)
-	  
+
 	  ; Обновляем $symbPrev
 	  $symbPrev = $Ticker
 
@@ -66,66 +66,69 @@ While 1
 	  ; ControlClick("", "", "[CLASS:SunAwtFrame]", "left", 2, 106, 66)
       ControlSend ("", "", $hLevelII, $Ticker & "{ENTER}", 0)
 	  ; ConsoleWrite(@error & @CRLF)
-;~ 	  
+;~
 ;~ 	  For $element In $TickerArray
 ;~ 		 Send($element)
 ;~ 	  Next
 ;~ 	  Send( "{ENTER}")
-	  
+
 	  ; Вызов функции для получения инфо компании по тикеру
       $sSymbolInfo = GetCompanyInfo($Ticker)
-	  
+
 	  ; Устанавливаем значения надписи в соответствии с инфо о компании
       GUICtrlSetData($hDC, $sSymbolInfo)
 
    EndIf
 
    ; Ручное информирование :)
-   
+
    ; Определяем заголовок активного окна
    ; Local $windowTitle = WinGetTitle("[ACTIVE]", "")
    ; ConsoleWrite("$windowTitle=" & $windowTitle & @LF)
-  
+
    ; Если активное окно - это окно Level2, то
    ; If StringInStr($windowTitle, "Level2") = 1 Then
-     
+
       ; Определяем видимый текст окна Level2
       ; Local $hActiveText = $windowTitle
       ; ConsoleWrite("$hActiveText=" & $hActiveText & @LF)
-     
+
       ; Из видимого текста выбираем тикер, по паттерну
       ; $symbArray = StringRegExp($hActiveText, '([A-Z|\.\-\+]+)~', 1, 1)
       ; If @error > 0 Then
           ; ConsoleWrite("StringRegExp@error=" & @error & @LF)
           ; MsgBox(0, "StringRegExp@error", @error)
       ; EndIf
-     
+
       ; Тикер
       ; Local $symbNew = _ArrayToString($symbArray, "")
-     
+
       ; Если значение тикера изменилось, то
       ; If $symbNew <> $symbPrev Then
          ; ConsoleWrite("$symbNew=" & $symbNew & @LF )
-         
+
          ; Обнулям предыдущее значение надписи
          ; ControlSetText($pic, "", $hDC, "")
-         
+
          ; Вызов функции для получения инфо компании по тикеру
          ; $sSymbolInfo = GetCompanyInfo($symbNew)
-     
+
          ; Устанавливаем значения надписи в соответствии с инфо о компании
          ; GUICtrlSetData($hDC, $sSymbolInfo)
-         
+
          ; Заменяем предыдущее значение тикера на новое
          ; $symbPrev = $symbNew
       ; EndIf
-     
-   ; EndIf   
-   
+
+   ; EndIf
+
    ; Если нажата правая клавиша мышки - выход из цикла
    If _IsPressed("02") Then
       ExitLoop
    EndIf
+
+	; ���������� �������� �� ���������
+	Sleep(500)
 
 WEnd
 
@@ -172,7 +175,7 @@ Func GetCompanyInfo($sSymbol)
 
    $aLines = BinaryToString($bData, 4)
    ; ConsoleWrite($aLines & @CRLF)
-   
+
    $array = StringRegExp($aLines, '<Sector>(.*)<\/Sector><Industry>(.*)<\/Industry>', 1, 1)
    If @error = 0 then
       ; ConsoleWrite ($array[0] & @CRLF)
