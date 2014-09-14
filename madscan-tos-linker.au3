@@ -8,8 +8,8 @@
 ; Ссылка на xml, содержащий название комании
 Global Const $yqlAPICompanyNameRequest = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=<SYMBOL>&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
 
-; Ссылка на xml, содержащий сектор и индустрии компании
-Global Const $yqlAPICompanySectorRequest = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.stocks%20where%20symbol%3D%22<SYMBOL>%22&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
+; Ссылка на текст, содержащий сектор и индустрии компании
+Global Const $yqlAPICompanySectorRequest = "http://www.stocksinplay.ru/quote.php?tickersInput=<SYMBOL>"
 
 ; регистрация нажатия ESC для выхода из программы
 HotKeySet("{ESC}", "Terminate")
@@ -127,7 +127,7 @@ While 1
       ExitLoop
    EndIf
 
-	; ���������� �������� �� ���������
+	; Снятие нагрузки с процессора
 	Sleep(500)
 
 WEnd
@@ -160,9 +160,9 @@ Func GetCompanyInfo($sSymbol)
    $array = StringRegExp($aLines, '"name": (".*"),"exch".*":(.*),', 1, 1)
    ; '"name": (".*"),"exch".*exchDisp":(.*),'
    If @error = 0 then
-	  ; ConsoleWrite ($array[0] & @CRLF)
+	  ;ConsoleWrite ($array[0] & @CRLF)
 	  ;ConsoleWrite ($array[1] & @CRLF)
-	  $sCompanyInfo = ($array[0] & @CRLF & $array[1] & ", ")
+	  $sCompanyInfo = ($array[0] & ", " & $array[1] & ", " & @CRLF)
    Else
 	  $sCompanyInfo = "N/A, "
    EndIf
@@ -176,11 +176,13 @@ Func GetCompanyInfo($sSymbol)
    $aLines = BinaryToString($bData, 4)
    ; ConsoleWrite($aLines & @CRLF)
 
-   $array = StringRegExp($aLines, '<Sector>(.*)<\/Sector><Industry>(.*)<\/Industry>', 1, 1)
+   $array = StringRegExp($aLines, 'panel-title">(.*, )(.*,)( .*,)( .*)</h3', 1, 1)
    If @error = 0 then
-      ; ConsoleWrite ($array[0] & @CRLF)
-      ; ConsoleWrite ($array[1] & @CRLF)
-      $sCompanyInfo = $sCompanyInfo & $array[0] & ", " & $array[1]
+      ;ConsoleWrite ("0: " & $array[0] & @CRLF)
+      ;ConsoleWrite ("1: " & $array[1] & @CRLF)
+	  ;ConsoleWrite ("2: " & $array[2] & @CRLF)
+	  ;ConsoleWrite ("3: " & $array[3] & @CRLF)
+      $sCompanyInfo = $sCompanyInfo & $array[1] & $array[2] & $array[3]
    Else
 	  $sCompanyInfo = $sCompanyInfo & "N/A"
    EndIf
