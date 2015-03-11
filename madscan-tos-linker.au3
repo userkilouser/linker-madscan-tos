@@ -15,19 +15,19 @@ Global Const $yqlAPICompanySectorRequest = "http://query.yahooapis.com/v1/public
 HotKeySet("{ESC}", "Terminate")
 
 ; Создаем окно формы
-$pic = GUICreate("Linker", 400, 30, 620, 80, $WS_POPUP, BitOR($WS_EX_LAYERED, $WS_EX_TOPMOST)) ;
+; $pic = GUICreate("Linker", 400, 30, 620, 80, $WS_POPUP, BitOR($WS_EX_LAYERED, $WS_EX_TOPMOST)) ;
 
 ; Кладем на форму картинку с прозрачным фоном
-$basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 30,-1, $GUI_WS_EX_PARENTDRAG)
+; $basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 30,-1, $GUI_WS_EX_PARENTDRAG)
 
 ; Создаем надпись (пока пустую)
-$hDC = GUICtrlCreateLabel("",0, 0, 400, 30)
+; $hDC = GUICtrlCreateLabel("",0, 0, 400, 30)
 ; Настройка надписи
-GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
-GUICtrlSetColor($hDC, 0xffd800)
+; GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+; GUICtrlSetColor($hDC, 0xffd800)
 
 ; Отображаем окно формы
-GUISetState(@SW_SHOW)
+; GUISetState(@SW_SHOW)
 
 ; Инициализация тикера
 $symbPrev = ""
@@ -38,11 +38,14 @@ While 1
    ; Берем видимый текст с активного окна
    Local $hActiveText = WinGetText("[ACTIVE]", "")
 
-   ; Сравниваем полученную выше строку с известным значением WinGetText() для фильтров Madscan
-   If StringInStr($hActiveText, "toolStripContainer1") = 1 Then
+   ;ConsoleWrite("HH" & $hActiveText & @CRLF)
 
+   ; Сравниваем полученную выше строку с известным значением WinGetText() для фильтров Madscan
+   If StringInStr($hActiveText, "toolStripContainer1") = 2 Then
+
+	;ConsoleWrite("MS: " & $hActiveText & @CRLF)
 	  ; Обнулям предыдущее значение надписи
-      ControlSetText($pic, "", $hDC, "")
+      ; ControlSetText($pic, "", $hDC, "")
 
 	  ; Если активное окно - это фильтр Madscan, то посылаем ему Ctrl+C для копирования в буфер всей строки, которая под мышкой
       Send("{CTRLDOWN}C{CTRLUP}")
@@ -53,8 +56,8 @@ While 1
       ; Выбираем из отстатка строки тикер
       Local $TickerArray = StringRegExp($Clip, '([A-Z|\.\-\+]+)\s', 1, 1)
       Local $Ticker = _ArrayToString($TickerArray, "")
-	  ; ConsoleWrite($TickerArray & @CRLF)
-	  ; ConsoleWrite($Ticker & @CRLF)
+	  ;ConsoleWrite("$TickerArray: " & $TickerArray & @CRLF)
+	  ;ConsoleWrite("$Ticker: " & $Ticker & @CRLF)
 
 	  ; Обновляем $symbPrev
 	  $symbPrev = $Ticker
@@ -62,10 +65,10 @@ While 1
 	  ; Активируем окно Level2 в Arche
        _WinWaitActivate("[CLASS:SunAwtFrame]", "")
       Local $hLevelII = ControlGetHandle("[CLASS:SunAwtFrame]", "", "")
-	  ConsoleWrite($hLevelII & @CRLF)
+	  ;ConsoleWrite("$hLevelII: " & $hLevelII & @CRLF)
 	  ; ControlClick("", "", "[CLASS:SunAwtFrame]", "left", 2, 106, 66)
       ControlSend ("", "", $hLevelII, $Ticker & "{ENTER}", 0)
-	  ; ConsoleWrite(@error & @CRLF)
+	  ;ConsoleWrite("@error: " & @error & @CRLF)
 ;~
 ;~ 	  For $element In $TickerArray
 ;~ 		 Send($element)
@@ -73,10 +76,10 @@ While 1
 ;~ 	  Send( "{ENTER}")
 
 	  ; Вызов функции для получения инфо компании по тикеру
-      $sSymbolInfo = GetCompanyInfo($Ticker)
+      ; $sSymbolInfo = GetCompanyInfo($Ticker)
 
 	  ; Устанавливаем значения надписи в соответствии с инфо о компании
-      GUICtrlSetData($hDC, $sSymbolInfo)
+      ; GUICtrlSetData($hDC, $sSymbolInfo)
 
    EndIf
 
