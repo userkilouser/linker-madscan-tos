@@ -9,25 +9,25 @@
 Global Const $yqlAPICompanyNameRequest = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=<SYMBOL>&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
 
 ; Ссылка на текст, содержащий сектор и индустрии компании
-Global Const $yqlAPICompanySectorRequest = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.stocks%20where%20symbol%3D%22<SYMBOL>%22&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
+Global Const $yqlAPICompanySectorRequest = "http://www.stocksinplay.ru/quote.php?tickersInput=<SYMBOL>"
 
 ; регистрация нажатия ESC для выхода из программы
 HotKeySet("{ESC}", "Terminate")
 
 ; Создаем окно формы
-; $pic = GUICreate("Linker", 400, 30, 620, 80, $WS_POPUP, BitOR($WS_EX_LAYERED, $WS_EX_TOPMOST)) ;
+$pic = GUICreate("Linker", 400, 30, 620, 80, $WS_POPUP, BitOR($WS_EX_LAYERED, $WS_EX_TOPMOST)) ;
 
 ; Кладем на форму картинку с прозрачным фоном
-; $basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 30,-1, $GUI_WS_EX_PARENTDRAG)
+$basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 30,-1, $GUI_WS_EX_PARENTDRAG)
 
 ; Создаем надпись (пока пустую)
-; $hDC = GUICtrlCreateLabel("",0, 0, 400, 30)
+$hDC = GUICtrlCreateLabel("",0, 0, 400, 30)
 ; Настройка надписи
-; GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
-; GUICtrlSetColor($hDC, 0xffd800)
+GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+GUICtrlSetColor($hDC, 0xffd800)
 
 ; Отображаем окно формы
-; GUISetState(@SW_SHOW)
+GUISetState(@SW_SHOW)
 
 ; Инициализация тикера
 $symbPrev = ""
@@ -43,9 +43,10 @@ While 1
    ; Сравниваем полученную выше строку с известным значением WinGetText() для фильтров Madscan
    If StringInStr($hActiveText, "toolStripContainer1") = 2 Then
 
-	;ConsoleWrite("MS: " & $hActiveText & @CRLF)
+	  ;ConsoleWrite("MS: " & $hActiveText & @CRLF)
+
 	  ; Обнулям предыдущее значение надписи
-      ; ControlSetText($pic, "", $hDC, "")
+      ;ControlSetText($pic, "", $hDC, "")
 
 	  ; Если активное окно - это фильтр Madscan, то посылаем ему Ctrl+C для копирования в буфер всей строки, которая под мышкой
       Send("{CTRLDOWN}C{CTRLUP}")
@@ -76,10 +77,10 @@ While 1
 ;~ 	  Send( "{ENTER}")
 
 	  ; Вызов функции для получения инфо компании по тикеру
-      ; $sSymbolInfo = GetCompanyInfo($Ticker)
+      $sSymbolInfo = GetCompanyInfo($Ticker)
 
 	  ; Устанавливаем значения надписи в соответствии с инфо о компании
-      ; GUICtrlSetData($hDC, $sSymbolInfo)
+      GUICtrlSetData($hDC, $sSymbolInfo)
 
    EndIf
 
@@ -151,20 +152,20 @@ Func Terminate()
 Func GetCompanyInfo($sSymbol)
 
    $sRequest = StringReplace($yqlAPICompanyNameRequest, "<SYMBOL>", $sSymbol)
-   ; ConsoleWrite($sRequest & @CRLF)
+   ;ConsoleWrite("$sRequest: " & $sRequest & @CRLF)
 
    ; Получение информации об имени компании
    $bData = InetRead($sRequest)
 
    $aLines = BinaryToString($bData, 4)
    $aLines = StringReplace($aLines, "},{", @CRLF)
-   ; ConsoleWrite($aLines & @CRLF)
+   ;ConsoleWrite("$aLines: " & $aLines & @CRLF)
 
-   $array = StringRegExp($aLines, '"name": (".*"),"exch".*":(.*),', 1, 1)
-   ; '"name": (".*"),"exch".*exchDisp":(.*),'
+   $array = StringRegExp($aLines, '"name":(.*),"exch":.*:"(.*)",', 1, 1)
+
    If @error = 0 then
-	  ;ConsoleWrite ($array[0] & @CRLF)
-	  ;ConsoleWrite ($array[1] & @CRLF)
+	  ;ConsoleWrite ("$array[0]: " & $array[0] & @CRLF)
+	  ;ConsoleWrite ("$array[1]: " & $array[1] & @CRLF)
 	  $sCompanyInfo = ($array[0] & ", " & $array[1] & ", " & @CRLF)
    Else
 	  $sCompanyInfo = "N/A, "
@@ -177,7 +178,7 @@ Func GetCompanyInfo($sSymbol)
    $bData = InetRead($sRequest)
 
    $aLines = BinaryToString($bData, 4)
-   ; ConsoleWrite($aLines & @CRLF)
+   ConsoleWrite("$aLines-bs" & $aLines & @CRLF)
 
    $array = StringRegExp($aLines, 'panel-title">(.*, )(.*,)( .*,)( .*)</h3', 1, 1)
    If @error = 0 then
