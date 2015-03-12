@@ -63,7 +63,7 @@ While 1
 	  ; Обновляем $symbPrev
 	  $symbPrev = $Ticker
 
-	  ; Активируем окно Level2 в Arche
+	  ; Активируем окно графиков Thinkorswim
        _WinWaitActivate("[CLASS:SunAwtFrame]", "")
       Local $hLevelII = ControlGetHandle("[CLASS:SunAwtFrame]", "", "")
 	  ;ConsoleWrite("$hLevelII: " & $hLevelII & @CRLF)
