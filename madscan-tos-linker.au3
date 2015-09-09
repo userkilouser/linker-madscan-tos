@@ -57,26 +57,33 @@ While 1
       ; Выбираем из отстатка строки тикер
       Local $TickerArray = StringRegExp($Clip, '([A-Z|\.\-\+]+)\s', 1, 1)
       Local $Ticker = _ArrayToString($TickerArray, "")
+	  ; Замена "." в тикере на "/" для TOS
+	  $Ticker = StringRegExpReplace ($Ticker, "\.", "/", 0)
+
 	  ;ConsoleWrite("$TickerArray: " & $TickerArray & @CRLF)
 	  ;ConsoleWrite("$Ticker: " & $Ticker & @CRLF)
 
 	  ; Обновляем $symbPrev
 	  $symbPrev = $Ticker
 
-	  ; Активируем окно Level2 в Arche
+	  ; Активируем окно TOS
        _WinWaitActivate("[CLASS:SunAwtFrame]", "")
-      Local $hLevelII = ControlGetHandle("[CLASS:SunAwtFrame]", "", "")
-	  ;ConsoleWrite("$hLevelII: " & $hLevelII & @CRLF)
+      Local $hTOS = ControlGetHandle("[CLASS:SunAwtFrame]", "", "")
+	  ; ConsoleWrite("$hTOS: " & $hTOS & @CRLF)
 	  ; ControlClick("", "", "[CLASS:SunAwtFrame]", "left", 2, 106, 66)
-      ControlSend ("", "", $hLevelII, $Ticker & "{ENTER}", 0)
-	  ;ConsoleWrite("@error: " & @error & @CRLF)
-;~
+
+	  ; Отправляем тикер в поле для тикера окна TOS (весь целиком)
+	  ControlSend ("", "", $hTOS, $Ticker & "{ENTER}", 0)
+	  ; ConsoleWrite("@error: " & @error & @CRLF)
+
+;~	  Отправляем тикер в поле для тикера окна TOS (посимвольно)
 ;~ 	  For $element In $TickerArray
 ;~ 		 Send($element)
 ;~ 	  Next
 ;~ 	  Send( "{ENTER}")
 
 	  ; Вызов функции для получения инфо компании по тикеру
+	  $Ticker = StringRegExpReplace ($Ticker, "/[A-Z]+", "", 0)
       $sSymbolInfo = GetCompanyInfo($Ticker)
 
 	  ; Устанавливаем значения надписи в соответствии с инфо о компании
@@ -146,11 +153,12 @@ Func _WinWaitActivate($title,$text,$timeout=0)
 ; Выход из программы
 Func Terminate()
     Exit 0
- EndFunc
+EndFunc
 
 ; Получение инфо о компании по тикеру
 Func GetCompanyInfo($sSymbol)
 
+   ;ConsoleWrite("SYMBOL: " & $sSymbol & @CRLF)
    $sRequest = StringReplace($yqlAPICompanyNameRequest, "<SYMBOL>", $sSymbol)
    ;ConsoleWrite("$sRequest: " & $sRequest & @CRLF)
 
@@ -178,7 +186,7 @@ Func GetCompanyInfo($sSymbol)
    $bData = InetRead($sRequest)
 
    $aLines = BinaryToString($bData, 4)
-   ConsoleWrite("$aLines-bs" & $aLines & @CRLF)
+   ; ConsoleWrite("$aLines-bs" & $aLines & @CRLF)
 
    $array = StringRegExp($aLines, 'panel-title">(.*, )(.*,)( .*,)( .*)</h3', 1, 1)
    If @error = 0 then
