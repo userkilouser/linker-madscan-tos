@@ -66,7 +66,11 @@ While 1
 	  ; Обновляем $symbPrev
 	  $symbPrev = $Ticker
 
+<<<<<<< HEAD
 	  ; Активируем окно TOS
+=======
+	  ; Активируем окно графиков Thinkorswim
+>>>>>>> origin/master
        _WinWaitActivate("[CLASS:SunAwtFrame]", "")
       Local $hTOS = ControlGetHandle("[CLASS:SunAwtFrame]", "", "")
 	  ; ConsoleWrite("$hTOS: " & $hTOS & @CRLF)
