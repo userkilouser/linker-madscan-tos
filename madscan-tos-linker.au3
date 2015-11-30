@@ -6,7 +6,7 @@
 
 
 ; Ссылка на xml, содержащий название комании
-Global Const $yqlAPICompanyNameRequest = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=<SYMBOL>&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
+; Global Const $yqlAPICompanyNameRequest = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=<SYMBOL>&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
 
 ; Ссылка на текст, содержащий сектор и индустрии компании
 Global Const $yqlAPICompanySectorRequest = "http://www.stocksinplay.ru/quote.php?tickersInput=<SYMBOL>"
@@ -159,25 +159,25 @@ EndFunc
 Func GetCompanyInfo($sSymbol)
 
    ;ConsoleWrite("SYMBOL: " & $sSymbol & @CRLF)
-   $sRequest = StringReplace($yqlAPICompanyNameRequest, "<SYMBOL>", $sSymbol)
-   ;ConsoleWrite("$sRequest: " & $sRequest & @CRLF)
+   ; $sRequest = StringReplace($yqlAPICompanyNameRequest, "<SYMBOL>", $sSymbol)
+   ; ConsoleWrite("$sRequest: " & $sRequest & @CRLF)
 
    ; Получение информации об имени компании
-   $bData = InetRead($sRequest)
+   ; $bData = InetRead($sRequest)
 
-   $aLines = BinaryToString($bData, 4)
-   $aLines = StringReplace($aLines, "},{", @CRLF)
-   ;ConsoleWrite("$aLines: " & $aLines & @CRLF)
+   ; $aLines = BinaryToString($bData, 4)
+   ; $aLines = StringReplace($aLines, "},{", @CRLF)
+   ; ConsoleWrite("$aLines: " & $aLines & @CRLF)
 
-   $array = StringRegExp($aLines, '"name":(.*),"exch":.*:"(.*)",', 1, 1)
+   ; $array = StringRegExp($aLines, '"name":(.*),"exch":.*:"(.*)",', 1, 1)
 
-   If @error = 0 then
-	  ;ConsoleWrite ("$array[0]: " & $array[0] & @CRLF)
-	  ;ConsoleWrite ("$array[1]: " & $array[1] & @CRLF)
-	  $sCompanyInfo = ($array[0] & ", " & $array[1] & ", " & @CRLF)
-   Else
-	  $sCompanyInfo = "N/A, "
-   EndIf
+   ; If @error = 0 then
+	  ; ConsoleWrite ("$array[0]: " & $array[0] & @CRLF)
+	  ; ConsoleWrite ("$array[1]: " & $array[1] & @CRLF)
+	  ; $sCompanyInfo = ($array[0] & ", " & $array[1] & ", " & @CRLF)
+   ; Else
+	  ; $sCompanyInfo = "N/A, "
+   ; EndIf
 
    ; Получение информации о секторе и индустрии компании
 
@@ -188,15 +188,15 @@ Func GetCompanyInfo($sSymbol)
    $aLines = BinaryToString($bData, 4)
    ; ConsoleWrite("$aLines-bs" & $aLines & @CRLF)
 
-   $array = StringRegExp($aLines, 'panel-title">(.*, )(.*,)( .*,)( .*)</h3', 1, 1)
+   $array = StringRegExp($aLines, 'panel-title">.*] - (.*, )(.*,)( .*,)( .*)</h3', 1, 1)
    If @error = 0 then
-      ;ConsoleWrite ("0: " & $array[0] & @CRLF)
-      ;ConsoleWrite ("1: " & $array[1] & @CRLF)
-	  ;ConsoleWrite ("2: " & $array[2] & @CRLF)
-	  ;ConsoleWrite ("3: " & $array[3] & @CRLF)
-      $sCompanyInfo = $sCompanyInfo & $array[1] & $array[2] & $array[3]
+      ; ConsoleWrite ("0: " & $array[0] & @CRLF)
+      ; ConsoleWrite ("1: " & $array[1] & @CRLF)
+	  ; ConsoleWrite ("2: " & $array[2] & @CRLF)
+	  ; ConsoleWrite ("3: " & $array[3] & @CRLF)
+      $sCompanyInfo = $array[0] & @CRLF & $array[1] & $array[2] & $array[3]
    Else
-	  $sCompanyInfo = $sCompanyInfo & "N/A"
+	  $sCompanyInfo = "N/A"
    EndIf
 
    Return $sCompanyInfo
