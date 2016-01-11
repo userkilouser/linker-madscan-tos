@@ -18,7 +18,7 @@ HotKeySet("{ESC}", "Terminate")
 $pic = GUICreate("Linker", 400, 60, 620, 80, $WS_POPUP, BitOR($WS_EX_LAYERED, $WS_EX_TOPMOST)) ;
 
 ; Кладем на форму картинку с прозрачным фоном
-$basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 30,-1, $GUI_WS_EX_PARENTDRAG)
+$basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 60,-1, $GUI_WS_EX_PARENTDRAG)
 
 ; Создаем надпись (пока пустую)
 $hDC = GUICtrlCreateLabel("",0, 0, 400, 30)
