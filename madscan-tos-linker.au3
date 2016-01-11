@@ -21,7 +21,7 @@ $pic = GUICreate("Linker", 400, 60, 620, 80, $WS_POPUP, BitOR($WS_EX_LAYERED, $W
 $basti_stay = GUICtrlCreatePic("bground.gif", 0, 0, 400, 60,-1, $GUI_WS_EX_PARENTDRAG)
 
 ; Создаем надпись (пока пустую)
-$hDC = GUICtrlCreateLabel("",0, 0, 400, 30)
+$hDC = GUICtrlCreateLabel("",0, 0, 400, 60)
 ; Настройка надписи
 GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 GUICtrlSetColor($hDC, 0xffd800)
