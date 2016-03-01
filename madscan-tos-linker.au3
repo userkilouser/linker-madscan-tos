@@ -9,7 +9,7 @@
 ; Global Const $yqlAPICompanyNameRequest = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=<SYMBOL>&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
 
 ; Ссылка на текст, содержащий сектор и индустрии компании
-Global Const $yqlAPICompanySectorRequest = "http://www.stocksinplay.ru/quote.php?tickersInput=<SYMBOL>"
+Global Const $yqlAPICompanySectorRequest = "http://www.stock-watcher.com/quote/<SYMBOL>"
 
 ; регистрация нажатия ESC для выхода из программы
 HotKeySet("{ESC}", "Terminate")
@@ -188,13 +188,13 @@ Func GetCompanyInfo($sSymbol)
    $aLines = BinaryToString($bData, 4)
    ; ConsoleWrite("$aLines-bs" & $aLines & @CRLF)
 
-   $array = StringRegExp($aLines, 'panel-title">.*] - (.*, )(.*,)( .*,)( .*)</h3', 1, 1)
+   $array = StringRegExp($aLines, 'Quote-fulname">\n.*>(.*), (.*)<\/b><br>(.*)<\/div', 1, 1)
    If @error = 0 then
       ; ConsoleWrite ("0: " & $array[0] & @CRLF)
       ; ConsoleWrite ("1: " & $array[1] & @CRLF)
 	  ; ConsoleWrite ("2: " & $array[2] & @CRLF)
 	  ; ConsoleWrite ("3: " & $array[3] & @CRLF)
-      $sCompanyInfo = $array[0] & @CRLF & $array[1] & $array[2] & $array[3]
+      $sCompanyInfo = $array[0] & @CRLF & $array[1] & $array[2]; & $array[3]
    Else
 	  $sCompanyInfo = "N/A"
    EndIf
